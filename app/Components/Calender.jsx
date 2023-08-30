@@ -4,13 +4,36 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import supabase from "../supabase";
+import Cookies from "js-cookie";
 const Calender = () => {
   const today = new Date();
   const [Data, setData] = useState([]);
 
   const FetchData = async () => {
-    let { data: TimeLine, error } = await supabase.from("TimeLine").select("*");
-    setData(TimeLine);
+    const userCookie = Cookies.get("user");
+
+    let userData = null;
+    if (userCookie) {
+      try {
+        userData = JSON.parse(userCookie);
+      } catch (error) {
+        // Handle JSON parsing error if needed
+        console.error("Error parsing user cookie:", error);
+      }
+    }
+
+    // Now userData might contain the user data retrieved from the cookie
+
+    let userID = null;
+    if (userData && userData.id) {
+      userID = userData.id;
+    }
+
+    let { data: userDatas, Usererror } = await supabase
+      .from("TimeLine")
+      .select("*")
+      .eq("userId", userID);
+    setData(userDatas);
   };
   const MakeValue = Data.map((res) => {
     const obj = {

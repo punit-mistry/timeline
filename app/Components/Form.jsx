@@ -8,11 +8,32 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import supabase from "../supabase";
+import Cookies from "js-cookie";
+
 const Form = () => {
+  const userCookie = Cookies.get("user");
+
+  let userData = null;
+  if (userCookie) {
+    try {
+      userData = JSON.parse(userCookie);
+    } catch (error) {
+      // Handle JSON parsing error if needed
+      console.error("Error parsing user cookie:", error);
+    }
+  }
+
+  // Now userData might contain the user data retrieved from the cookie
+
+  let userID = null;
+  if (userData && userData.id) {
+    userID = userData.id;
+  }
   const [data, setData] = useState({
     date: "",
     hour: "",
     note: "",
+    userId: userID,
   });
 
   const HandleSubmit = async () => {

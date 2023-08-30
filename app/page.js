@@ -1,18 +1,22 @@
 'use client'
-import { useState } from "react"
-import Timeline from "./Timeline"
-import Landing from "./Components/Landing"
-import Header from "./Components/Header"
+
+import { useEffect, useState } from "react";
+import Timeline from "./Timeline";
+import Landing from "./Components/Landing";
+
 export default function Home() {
-  
-  const [isLoggedIn,setIsLoggedIn] = useState(false)
-  
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem('isLoggedIn') === 'true'
+  );
 
+  useEffect(() => {
+    // Update the isLoggedIn state based on local storage
+    setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+  }, []);
 
-  
   return (
-   <>
-{ isLoggedIn ? <Timeline /> : <Landing />}
-   </>
-  )
+    <>
+      {isLoggedIn ? <Timeline /> : <Landing />}
+    </>
+  );
 }
