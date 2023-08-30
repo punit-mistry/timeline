@@ -6,7 +6,7 @@ import Landing from "./Components/Landing";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem('isLoggedIn') === 'true'
+   null
   );
 
   useEffect(() => {
