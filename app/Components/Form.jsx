@@ -8,32 +8,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import supabase from "../supabase";
-import Cookies from "js-cookie";
+import { useAuthContext } from "../Context";
 
 const Form = () => {
-  const userCookie = Cookies.get("user");
-
-  let userData = null;
-  if (userCookie) {
-    try {
-      userData = JSON.parse(userCookie);
-    } catch (error) {
-      // Handle JSON parsing error if needed
-      console.error("Error parsing user cookie:", error);
-    }
-  }
-
-  // Now userData might contain the user data retrieved from the cookie
-
-  let userID = null;
-  if (userData && userData.id) {
-    userID = userData.id;
-  }
+  const { user } = useAuthContext();
   const [data, setData] = useState({
     date: "",
     hour: "",
     note: "",
-    userId: userID,
+    Catg: [],
+    userId: user.id,
   });
 
   const HandleSubmit = async () => {
@@ -42,12 +26,30 @@ const Form = () => {
         .from("TimeLine")
         .insert([data])
         .select();
+      // const TimeLine = supabase
+      //   .channel("custom-all-channel")
+      //   .on(
+      //     "postgres_changes",
+      //     { event: "*", schema: "public", table: "TimeLine" },
+      //     (payload) => {
+      //       console.log("Change received!", payload);
+      //     }
+      //   )
+      //   .subscribe();
       console.log(ts, error);
-      window.location.reload();
     } else {
       window.alert("Please enter all the required fields");
     }
   };
+
+  const handleCatg = (category) => {
+    if (!data.Catg.includes(category)) {
+      // Check if the category doesn't already exist
+      const newCatgArray = [...data.Catg, category];
+      setData({ ...data, Catg: newCatgArray });
+    }
+  };
+
   return (
     <div>
       <AlertDialog>
@@ -98,6 +100,62 @@ const Form = () => {
                 onChange={(e) => setData({ ...data, note: e.target.value })}
               />
             </lable>
+            <label className="block font-bold">
+              Catg :
+              <textarea
+                type="text"
+                name="note"
+                className="font-normal p-2 border w-96 m-2 rounded-lg"
+                value={data.Catg} // Display selected categories in the input field
+                onChange={(e) =>
+                  setData({ ...data, Catg: e.target.value.split(", ") })
+                } // Split input value into an array
+              />
+              <div className="flex flex-wrap gap-5 p-2 capitalize">
+                <button
+                  className="bg-yellow-300 p-2 rounded"
+                  onClick={() => handleCatg("Shopping")}
+                >
+                  🛒 Shopping
+                </button>
+                <button
+                  className="bg-blue-300 p-2 rounded"
+                  onClick={() => handleCatg("Education")}
+                >
+                  🏫 Education
+                </button>
+                <button
+                  className="bg-pink-300 p-2 rounded"
+                  onClick={() => handleCatg("Personal")}
+                >
+                  💻 Personal
+                </button>
+                <button
+                  className="bg-purple-300 p-2 rounded"
+                  onClick={() => handleCatg("Food")}
+                >
+                  🥘 Food
+                </button>
+                <button
+                  className="bg-orange-300 p-2 rounded"
+                  onClick={() => handleCatg("Travel")}
+                >
+                  🗺️ Travel
+                </button>
+                <button
+                  className="bg-green-300 p-2 rounded"
+                  onClick={() => handleCatg("Fees")}
+                >
+                  💸 Fees
+                </button>
+                <button
+                  className="bg-red-300 p-2 rounded"
+                  onClick={() => handleCatg("Business")}
+                >
+                  👔 Business
+                </button>
+              </div>
+            </label>
             <AlertDialogAction>
               <Button
                 onClick={HandleSubmit}

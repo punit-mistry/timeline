@@ -1,38 +1,22 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
+
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import supabase from "../supabase";
 import Cookies from "js-cookie";
+import Logs from "./Logs";
+import { useAuthContext } from "../Context/index";
+
 const Calender = () => {
-  const today = new Date();
   const [Data, setData] = useState([]);
-
+  const { user } = useAuthContext();
   const FetchData = async () => {
-    const userCookie = Cookies.get("user");
-
-    let userData = null;
-    if (userCookie) {
-      try {
-        userData = JSON.parse(userCookie);
-      } catch (error) {
-        // Handle JSON parsing error if needed
-        console.error("Error parsing user cookie:", error);
-      }
-    }
-
-    // Now userData might contain the user data retrieved from the cookie
-
-    let userID = null;
-    if (userData && userData.id) {
-      userID = userData.id;
-    }
-
     let { data: userDatas, Usererror } = await supabase
       .from("TimeLine")
       .select("*")
-      .eq("userId", userID);
+      .eq("userId", user.id);
     setData(userDatas);
   };
   const MakeValue = Data.map((res) => {
@@ -49,35 +33,47 @@ const Calender = () => {
     FetchData();
   }, []);
   return (
-    <div className="border shadow-xl max-h-52 flex w-full justify-center items-center">
-      <div className=" w-1/2">
-        <CalendarHeatmap
-          startDate={new Date("2023-01-01")}
-          endDate={new Date("2023-12-01")}
-          values={MakeValue}
-          tooltipDataAttrs={(value) => {
-            return {
-              "data-tip": `${value.date} has count: ${value.count}`,
-            };
-          }}
-          showWeekdayLabels={true}
-          classForValue={(value) => {
-            if (!value) {
-              return "color-empty";
-            } else if (value.count <= 5) {
-              return "color-scale-1";
-            } else if (value.count <= 15) {
-              return "color-scale-3";
-            } else if (value.count <= 20) {
-              return "color-scale-4";
-            } else if (value.count <= 24) {
-              return "color-scale-5";
+    <>
+      <div className="border shadow-xl max-h-52 flex w-full justify-center items-center">
+        <div className=" w-1/2">
+          <CalendarHeatmap
+            // data-for={`tooltip-${value.date}`}
+            startDate={new Date("2023-01-01")}
+            endDate={new Date("2023-12-01")}
+            values={MakeValue}
+            tooltipDataAttrs={(value) => {
+              return {
+                "data-tip": true,
+                "data-for": `tooltip-${value.date}`, // Unique identifier for each tooltip
+              };
+            }}
+            showWeekdayLabels={true}
+            classForValue={(value) => {
+              if (!value) {
+                return "color-empty";
+              } else if (value.count <= 5) {
+                return "color-scale-1";
+              } else if (value.count <= 15) {
+                return "color-scale-3";
+              } else if (value.count <= 20) {
+                return "color-scale-4";
+              } else if (value.count <= 24) {
+                return "color-scale-5";
+              }
+            }}
+            onClick={(value) =>
+              alert(
+                `Clicked on value with count: ${
+                  value?.count ? value.count : "0"
+                } hrs`
+              )
             }
-          }}
-        />
-        {/* <ReactTooltip /> */}
+          />
+          <ReactTooltip />
+        </div>
       </div>
-    </div>
+      <Logs Data={Data} />
+    </>
   );
 };
 function shiftDate(date, numDays) {

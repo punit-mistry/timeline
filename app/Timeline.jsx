@@ -14,7 +14,6 @@ const Timeline = () => {
           <Form />
         </div>
         <Calender />
-        <Logs />
       </div>
     </div>
   );
