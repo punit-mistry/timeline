@@ -58,7 +58,7 @@ const Form = () => {
             variant="outline"
             className="w-52"
           >
-            +
+            Add +
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>

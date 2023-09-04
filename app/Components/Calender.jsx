@@ -34,8 +34,8 @@ const Calender = () => {
   }, []);
   return (
     <>
-      <div className="border shadow-xl max-h-52 flex w-full justify-center items-center">
-        <div className=" w-1/2">
+      <div className="border shadow-xl max-h-56  flex w-full justify-center items-center">
+        <div className=" w-[100vw] md:w-1/2 ">
           <CalendarHeatmap
             // data-for={`tooltip-${value.date}`}
             startDate={new Date("2023-01-01")}
